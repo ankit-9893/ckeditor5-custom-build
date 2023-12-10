@@ -6,8 +6,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { EditorConfig } from '@ckeditor/ckeditor5-core/src/editor/editorconfig';
-
-import * as Editor from 'ckeditor5-custom-build/build/ckeditor.js';
+// @ts-ignore
+import * as Editor from '../../ckeditor5-custom-build/build/ckeditor.js';
 import { WordCountService } from './word-count.service';
 
 @Component({
@@ -21,7 +21,7 @@ export class AppComponent implements AfterViewInit {
 
   showEditor = false;
 
-  public config: EditorConfig = {
+  public config: any = {
     toolbar: {
       items: [
         'undo',
@@ -61,7 +61,7 @@ export class AppComponent implements AfterViewInit {
   constructor(private renderer: Renderer2, public wordCountService: WordCountService) {}
 
   ngAfterViewInit(): void {
-    this.addDocumentClickListener();
+    
   }
 
   onClick(event: any) {
@@ -100,5 +100,6 @@ export class AppComponent implements AfterViewInit {
   
   onReady(params: any) {
     console.log(params);
+    this.addDocumentClickListener();
   }
 }
