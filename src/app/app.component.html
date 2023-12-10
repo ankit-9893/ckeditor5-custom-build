@@ -1,9 +1,10 @@
 <ng-container *ngIf="!showEditor">
-    <textarea [(ngModel)]="value" (click)="onClick($event)"></textarea>
+    <!-- <textarea [(ngModel)]="value" ></textarea> -->
+    <div class="my-div" [innerHTML]="value" (click)="onClick($event)"></div>
 </ng-container>
 
 <ng-container *ngIf="showEditor">
-    <div #ckEditor>
+    <div #ckEditor class="ck-wrapper">
         <ckeditor [editor]="Editor" (ready)="onReady($event)" [(ngModel)]="value" [config]="config"></ckeditor>
     </div>
 </ng-container>

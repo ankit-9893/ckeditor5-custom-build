@@ -1,7 +1,14 @@
-import { AfterViewInit, Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
+import { EditorConfig } from '@ckeditor/ckeditor5-core/src/editor/editorconfig';
 
-
-import * as Editor from 'ckeditor5-custom-build/build/ckeditor.js'
+import * as Editor from 'ckeditor5-custom-build/build/ckeditor.js';
+import { WordCountService } from './word-count.service';
 
 @Component({
   selector: 'app-root',
@@ -14,87 +21,47 @@ export class AppComponent implements AfterViewInit {
 
   showEditor = false;
 
-  public config = {
-    // plugins: ['Link', 'Bold', 'Italic', 'Undo', 'Redo'],
-    // toolbar: ['bold', 'italic', 'link', '|', 'undo', 'redo'],
-    link: {
-      // autoLink: true,
-      addTargetToExternalLinks: true,
+  public config: EditorConfig = {
+    toolbar: {
+      items: [
+        'undo',
+        'redo',
+        '|',
+        'bold',
+        'heading',
+        'italic',
+        'fontFamily',
+        'fontSize',
+        'highlight',
+        'alignment',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'outdent',
+        'indent',
+        '|',
+        'blockQuote',
+      ],
     },
-    // fontFamily: {
-    //   options: [
-    //     'default',
-    //     'Arial, Helvetica, sans-serif',
-    //     'Courier New, Courier, monospace',
-    //     'Georgia, serif',
-    //     'Lucida Sans Unicode, Lucida Grande, sans-serif',
-    //     'Tahoma, Geneva, sans-serif',
-    //     'Times New Roman, Times, serif',
-    //     'Trebuchet MS, Helvetica, sans-serif',
-    //     'Verdana, Geneva, sans-serif',
-    //   ],
-    //   supportAllValues: false,
-    // },
-    // fontSize: {
-    //   options: [9, 10, 11, 12, 14, 'default', 18, 24, 36, 64],
-    //   supportAllValues: true,
-    // },
-    indentBlock: {
-      offset: 4,
-      unit: 'em',
+    link: {
+      addTargetToExternalLinks: true,
     },
     wordCount: {
       onUpdate: (stat: any) => {
-          console.log(stat);
+        console.log(stat);
       },
-    },
-    // table: {
-    //   contentToolbar: [
-    //     'tableColumn',
-    //     'tableRow',
-    //     'mergeTableCells',
-    //     'tableProperties',
-    //     'tableCellProperties',
-    //   ],
-
-    //   // Set the palettes for tables.
-    //   tableProperties: {},
-
-    //   // Set the palettes for table cells.
-    //   tableCellProperties: {},
-    // },
-    // toolbar: {
-    //   items: [
-    //     'undo',
-    //     'redo',
-    //     'heading',
-    //     'bold',
-    //     'italic',
-    //     'link',
-    //     'bulletedList',
-    //     'numberedList',
-    //     'indent',
-    //     'outdent',
-    //     'insertTable',
-    //   ],
-    // },
-    autosave: {},
-    removePlugins: [],
+    }
   };
 
   @ViewChild('ckEditor')
   ckEditor!: ElementRef;
 
-  private documentClickListener: any
+  private documentClickListener: any;
 
-  constructor(private renderer: Renderer2) {}
-
-  
+  constructor(private renderer: Renderer2, public wordCountService: WordCountService) {}
 
   ngAfterViewInit(): void {
-    // this.Editor.
-    // this.ckEditor.change
-    this.addDocumentClickListener()
+    this.addDocumentClickListener();
   }
 
   onClick(event: any) {
@@ -102,21 +69,35 @@ export class AppComponent implements AfterViewInit {
     event.stopImmediatePropagation();
   }
 
-   // Method to dynamically add document click listener
-   addDocumentClickListener(): void {
-    this.documentClickListener = this.renderer.listen('document', 'click', (event: Event) => {
-      this.finishEditing(event);
-    });
+  // Method to dynamically add document click listener
+  addDocumentClickListener(): void {
+    this.documentClickListener = this.renderer.listen(
+      'document',
+      'click',
+      (event: Event) => {
+        this.finishEditing(event);
+        
+      }
+    );
   }
 
   finishEditing(event: any) {
-    if (this.showEditor && this.ckEditor?.nativeElement && !this.ckEditor.nativeElement?.contains(event.target)) {
+    if (
+      this.showEditor &&
+      this.ckEditor?.nativeElement &&
+      !this.ckEditor.nativeElement?.contains(event.target)
+    ) {
       // Clicked outside CKEditor, handle the event as needed
       console.log('Clicked outside CKEditor');
       this.showEditor = false;
+      console.log(this.wordCountService.getCount(this.value));
+      if (this.documentClickListener) {
+        this.documentClickListener(); 
+        this.documentClickListener = null;
+      }
     }
   }
-
+  
   onReady(params: any) {
     console.log(params);
   }

@@ -1,0 +1,10 @@
+.my-div {
+  border: 2px solid black;
+}
+::ng-deep {
+//   .ck-wrapper {
+    .ck-powered-by {
+      display: none !important;
+    }
+//   }
+}
